@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .accountForm import LoginForm
 from .models import Users
 
@@ -12,8 +12,20 @@ def login(request):
 
     if(form.is_valid()):
         #q = Users(full_name=form.cleaned_data('full_name'))
-        print(form.cleaned_data['user_type'], 'test')
-        print('good')
+        try : 
+            user = Users.objects.get(email=form.cleaned_data['email'],
+                                 password=form.cleaned_data['password'],
+                                 user_type=form.cleaned_data['user_type'])
+            #print(form.cleaned_data['user_type'], 'test')
+            if form.cleaned_data['user_type'] == "Doctor":
+                return redirect("/doctor/")
+            else :
+                return redirect("/pharmacy/")
+        except:
+            return render(request, "account/index.html", {
+                "status": False,
+                "message": "Login  failed. Wrong email & password",
+            })
     else:
         form = LoginForm()
         print('not good')

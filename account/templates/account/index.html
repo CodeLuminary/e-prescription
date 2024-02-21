@@ -55,6 +55,11 @@
         <p>
             <input value="Login" type="submit" />
         </p>
+        {% if not status %}
+            <p style="color: red">
+                {{ message }} 
+            </p>
+        {% endif %}
     </form>
 </body>
 </html>

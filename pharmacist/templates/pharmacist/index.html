@@ -20,9 +20,39 @@
     <div class="content">
         <div class="adddrug">
             <h2>Add Drug</h2>
+            <form method="post" action="/pharmacy/add-drug">
+                {% csrf_token %}
+                <span>Name*</span><br/>
+                <input type="text" name="full_name" placeholder="Enter patient full name"/><br/>
+                <span>Description*</span><br/>
+                <textarea name="description" placeholder="Enter patient email">
+                </textarea><br/>
+                <input type="submit" value="Add Patient"/>
+                {% if not status %}
+                    <p style="color: red">
+                        {{ message }} 
+                    </p>
+                {% endif %}
+            </form>
         </div>
         <div class="viewdrug">
             <h2>View Drug</h2>
+            <table>
+                <thead>
+                     <tr>
+                         <th>Name</th>
+                         <th>Description</th>
+                     </tr>
+                </thead> 
+                <tbody>
+                 {% for patient in data.patients %}
+                     <tr>
+                         <td>{{ patient.name }}</td>
+                         <td>{{ patient.description }}</td>
+                     </tr>
+                 {% endfor %}
+                </tbody>
+             </table>
         </div>
         <div class="administer">
             <h2>Administer Prescription</h2>

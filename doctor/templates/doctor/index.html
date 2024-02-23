@@ -32,10 +32,31 @@
             padding: 20px 4%;
             width: 100%;
             height: calc(100% - 50px);
+            overflow-y: scroll;
         }
         .content > div{
             background-color: #fff;
             padding: 2px 20px 20px;
+        }
+        input, select{
+            height: 35px; width: 400px;
+            border-radius: 5px; outline: none;
+            margin: 5px 0px 15px;
+            border: 1px solid #D9D9D9;
+        }
+        input[type="submit"]{
+            background-color: #3277b3; color: #fff;
+            padding: 8px 20px; border-radius: 20px;
+            border: 2px solid #3277b3;
+            width: 100px; cursor: pointer;
+            outline: none;
+        }
+        table, tr, td, th{
+            border-collapse: collapse;
+            padding: 5px;
+        }
+        table tr:nth-child(odd) td{
+            background-color: #f2f2f2;
         }
     </style>
 </head>
@@ -47,24 +68,65 @@
     </div>
     <div class="content">
         <div class="addpatient">
-            <h2>Add Patient</h2>
-            <span>Full Name*</span><br/>
-            <input type="text" placeholder="Enter patient full name"/><br/>
-            <span>Email</span><br/>
-            <input type="text" placeholder="Enter patient email"/><br/>
-            <span>Phone Number</span><br/>
-            <input type="tel" placeholder="Enter patient number"/><br/>
-            <span>Age</span><br/>
-            <input type="number" placeholder="Enter patient age"/><br/>
-            <span>Patient ID No.</span><br/>
-            <input type="text" placeholder="Enter patient id number"/><br/>
-            <br/>
-            <button>Add Patient</button>
+            <form method="post" action="/doctor/addpatient">
+                {% csrf_token %}
+                <h2>Add Patient</h2>
+                <span>Full Name*</span><br/>
+                <input type="text" name="full_name" placeholder="Enter patient full name"/><br/>
+                <span>Email</span><br/>
+                <input type="text" name="email" placeholder="Enter patient email"/><br/>
+                <span>Phone Number</span><br/>
+                <input type="tel" name="phone_no" placeholder="Enter patient number"/><br/>
+                <span>Age</span><br/>
+                <input type="number" name="age" placeholder="Enter patient age"/><br/>
+                <span>Patient ID No.</span><br/>
+                <input type="text" name="patient_id" placeholder="Enter patient id number"/><br/>
+                <span>Gender</span><br/>
+                <select type="text" name="gender">
+                    <option>Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select><br/>
+                <br/>
+                <input type="submit" value="Add Patient"/>
+                {% if not status %}
+                    <p style="color: red">
+                        {{ message }} 
+                    </p>
+                {% endif %}
+            </form>
         </div>
         <div class="viewpatients">
             <h2>View Patients</h2>
+            <table>
+               <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Age</th>
+                        <th>Patient NO.</th>
+                        <th>Gender</th>
+                        <th>Phone No.</th>
+                    </tr>
+               </thead> 
+               <tbody>
+                {% for patient in data.patients %}
+                    <tr>
+                        <td>{{ patient.full_name }}</td>
+                        <td>{{ patient.email }}</td>
+                        <td>{{ patient.age }}</td>
+                        <td>{{ patient.patient_no }}</td>
+                        <td>{{ patient.gender }}</td>
+                        <td>{{ patient.phone_no }}</td>
+                    </tr>
+                {% endfor %}
+               </tbody>
+            </table>
         </div>
         <div class="prescribedrug">
+            <form>
+                {% csrf_token %}
+            </form>
             <h2>Prescribe Drug</h2>
             <span>Select Patient</span><br/>
             <select>

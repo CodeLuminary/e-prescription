@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from .accountForm import LoginForm
 from .models import Users
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from .accountSerializer import UsersSerializers
 
 # Create your views here.
 
@@ -32,4 +35,25 @@ def login(request):
     
     return render(request, "account/index.html", {"form": form})
 
+#This is just for testing Django rest framework
+@api_view(['GET'])
+def getUsers(request):
+        allUsers = Users.objects.all()
+        serializ = UsersSerializers(allUsers, many=True)
+        '''users = {
+            'name': 'victor ijoni',
+            'age': 20
+        }'''
+        return Response(serializ.data)
 
+@api_view(['POST'])
+def addUser(request):
+    print(request.data['full_name'])
+    serializ = UsersSerializers(data = request.data)
+    if serializ.is_valid() : 
+        #serializ.save()
+        print(serializ.data)
+        return Response(serializ.data)
+    return Response()
+    
+    

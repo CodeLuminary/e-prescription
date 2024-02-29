@@ -2,6 +2,8 @@ from django.shortcuts import render
 from .addDrugForm import AddDrugForm
 from .models import Drug
 
+
+
 # Create your views here.
 def index(request):
     return render(request, 'pharmacist/index.html',{})
@@ -11,8 +13,8 @@ def addDrug(request):
 
     if(form.is_valid()):
         try:
-            name = form.cleaned_data['full_name']
-            description = form.cleaned_data['email']
+            name = form.cleaned_data['name']
+            description = form.cleaned_data['description']
 
             newDrug = Drug(name = name,
                                  description = description)
@@ -20,7 +22,7 @@ def addDrug(request):
             print(newDrug)
             #print(newPatient.id)
 
-            return render(request, "pharmacy/index.html", {
+            return render(request, "pharmacist/index.html", {
                 "status": True,
                 "message": "Drug added successfully",
                 "data": newDrug.id
@@ -28,9 +30,9 @@ def addDrug(request):
 
         except:
             #print('not working')
-            return render(request, "pharmacy/index.html", {
-                "status": False,
-                "message": "Action failed. Drug could not be added",
+            return render(request, "pharmacist/index.html", {
+               "status": False,
+               "message": "Action failed. Drug could not be added",
             })
     
     else: 

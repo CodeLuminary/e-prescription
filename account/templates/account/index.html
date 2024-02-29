@@ -41,6 +41,8 @@
 <body>
     <form method="POST" action="/account/submit">
         {% csrf_token %}
+        <!--{% load static %}
+<img src="{% static 'account/myimg.jpg' %}" alt="My image"> -->
         <h2>Login</h2>
         UserType*<br/>
         <select name="user_type">

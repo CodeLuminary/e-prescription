@@ -6,16 +6,76 @@
     <title>Pharmacist</title>
     <style>
         body{
-            width: 100%; height: 100vh;
             margin: 0px;
+            width: 100%;
+            height: 100vh;
+        }
+        *{
+            box-sizing: border-box;
+        }
+        .highlight{
+            background-color: #3277b3; color: #fff;
+            border: 1px solid #3277b3;
+        }
+        button{
+            padding: 5px;border-radius: 5px;
+            border-width: 1px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .btnContent{
+            padding: 10px 5%;
+            border-bottom: 2px solid #d9d9d9;
+        }
+        .content{
+            background-color: #ccc;
+            padding: 20px 4%;
+            width: 100%;
+            height: calc(100% - 50px);
+            overflow-y: scroll;
+        }
+        .content > div{
+            background-color: #fff;
+            padding: 2px 20px 20px;
+        }
+        input, select, textarea{
+            height: 35px; width: 400px;
+            border-radius: 5px; outline: none;
+            margin: 5px 0px 15px;
+            border: 1px solid #D9D9D9;
+        }
+        textarea{
+            height: 200px;
+        }
+        input[type="submit"]{
+            background-color: #3277b3; color: #fff;
+            padding: 8px 20px; border-radius: 20px;
+            border: 2px solid #3277b3;
+            width: 100px; cursor: pointer;
+            outline: none;
+        }
+        table, tr, td, th{
+            border-collapse: collapse;
+            padding: 5px;
+        }
+        table tr:nth-child(odd) td{
+            background-color: #f2f2f2;
+        }
+        .drugpar{
+            margin-bottom: 5px; text-decoration: underline;
+        }
+        .drugDiv{
+            padding: 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div>
-        <button class="btn-adddrug">Add drug</button>
-        <button class="btn-viewdrug">View Drugs</button>
-        <button class="btn-administer">Administer Prescription</button>
+    <div class="btnContent">
+        <button onclick="changeScreen(0)" class="btn-adddrug">Add drug</button>
+        <button onclick="changeScreen(1)" class="btn-viewdrug">View Drugs</button>
+        <button onclick="changeScreen(2)" class="btn-administer">Administer Prescription</button>
     </div>
     <div class="content">
         <div class="adddrug">
@@ -23,16 +83,16 @@
             <form method="post" action="/pharmacy/add-drug">
                 {% csrf_token %}
                 <span>Name*</span><br/>
-                <input type="text" name="full_name" placeholder="Enter patient full name"/><br/>
+                <input type="text" name="name" placeholder="Enter patient full name"/><br/>
                 <span>Description*</span><br/>
                 <textarea name="description" placeholder="Enter patient email">
                 </textarea><br/>
-                <input type="submit" value="Add Patient"/>
-                {% if not status %}
-                    <p style="color: red">
-                        {{ message }} 
-                    </p>
-                {% endif %}
+                <input type="submit" value="Add Drug"/>
+                
+                <p style="color: red">
+                    {{ message }} 
+                </p>
+                
             </form>
         </div>
         <div class="viewdrug">
@@ -59,7 +119,40 @@
         </div>
     </div>
     <script>
+        const allContents = document.querySelectorAll('.content > div');
+        const allBtn = document.querySelectorAll('.btnContent > button');
+        const allContentsLen = allContents.length;
 
+        for(let i = 1; i < allContentsLen; i++){
+            allContents[i].style.display = 'none';
+        }
+        const changeScreen = (index)=>{
+            for(let i = 0; i < allContentsLen; i++){
+                allContents[i].style.display = 'none';
+                allBtn[i].classList.remove('highlight')
+            }
+
+            allContents[index].style.display = 'block';
+            allBtn[index].classList.add('highlight')
+        }
+        let drugCnt = 0;
+        const drugDiv = document.querySelector('.drugDiv');
+        const addDrug = ()=>{
+            const drug = document.getElementById("drug_id");
+            const unit = document.getElementById("unit");
+            
+            drugDiv.innerHTML += `
+              <p class='drugpar drugdiv-${drugCnt}'>
+                Drug: ${drug.value.split('-')[1]} &nbsp;&nbsp;Unit: ${unit.value} &nbsp;&nbsp; <span onclick='removeDrug(${drugCnt})'>Remove</span>
+              </p>
+            `
+            drugCnt++;
+        }
+
+        const removeDrug = (index) =>{
+            const drugP = document.querySelector(`.drugdiv-${index}`);
+            drugDiv.removeChild(drugP)
+        }
     </script>
 </body>
 </html>

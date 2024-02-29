@@ -1,10 +1,19 @@
 from django.shortcuts import render
 from .addPatientForm import AddPatientForm
 from .models import Patient
+from pharmacist.models import Drug
+
+def getAllData():
+    drugs = Drug.objects.all()
+    patient = Patient.objects.all()
+    return {
+        "drugs": drugs,
+        "patients": patient
+    }
 
 # Create your views here.
 def index(request):
-    return render(request, 'doctor/index.html',{})
+    return render(request, 'doctor/index.html', {"data": getAllData()})
 
 def addpatient(request):
     form = AddPatientForm(request.POST)
@@ -30,7 +39,7 @@ def addpatient(request):
             return render(request, "doctor/index.html", {
                 "status": True,
                 "message": "Patient added successfully",
-                "data": newPatient.id
+                "data": getAllData()
             })
 
         except:
@@ -38,9 +47,10 @@ def addpatient(request):
             return render(request, "doctor/index.html", {
                 "status": False,
                 "message": "Action failed. Patient could not be added",
+                "data": getAllData()
             })
     
     else: 
         #print('horible')
-        return render(request, "doctor/index.html",{})
+        return render(request, "doctor/index.html",{"data": getAllData()})
     

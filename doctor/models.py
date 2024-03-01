@@ -17,7 +17,7 @@ class Prescription(models.Model):
     prescription_id = models.TextField()
     date_time = models.DateTimeField()
     prescribe_by = models.ForeignKey(Users, on_delete=models.CASCADE)
-    purpose = models.TextField()
+    purpose = models.TextField(default='')
 
 class PrescriptionItem(models.Model):
     prescription = models.ForeignKey(Prescription, on_delete=models.CASCADE)

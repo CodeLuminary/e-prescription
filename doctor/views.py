@@ -1,7 +1,13 @@
 from django.shortcuts import render
 from .addPatientForm import AddPatientForm
-from .models import Patient
+from .models import Patient, Prescription, PrescriptionItem
 from pharmacist.models import Drug
+from datetime import datetime
+
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
+from .prescriptionSerializer import PrescriptionSerializers, PrescriptionItemSerializers
 
 def getAllData():
     drugs = Drug.objects.all()
@@ -53,4 +59,31 @@ def addpatient(request):
     else: 
         #print('horible')
         return render(request, "doctor/index.html",{"data": getAllData()})
+
+@api_view(['POST'])
+def prescribeDrug(request):
+    try:
+        now = datetime.now()
+        presId = str(int(now.timestamp()))
+        patient = Patient.objects.get(id=int(request.data['patient_id']))
+        prescribe = Prescription(
+            purpose = request.data['purpose'],
+            patient = patient,
+            date_time = datetime.now(),
+            prescription_id = presId,
+            prescribe_by_id = 1
+        )
+        prescribe.save()
+        for d in request.data['drugs']:
+            drug = Drug.objects.get(id=int(d['id']))
+            pDrug = PrescriptionItem(
+                prescription = prescribe,
+                drug_id = drug,
+                no_of_unit = d['unit']    
+            )
+            pDrug.save()
+        print('succeed')
+        return Response({"message":"Prescription made successfully", "data": presId})
+    except:       
+        return Response({"message":"Action failed"})
     

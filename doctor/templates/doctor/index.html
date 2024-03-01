@@ -140,17 +140,18 @@
             </form>
             <h2>Prescribe Drug</h2>
             <span>Select Patient</span><br/>
-            <select name="patient_id">
+            <select id="patient_id" name="patient_id">
                 <option value="">Select Patient</option>
                 {% for patient in data.patients %}
                     <option value="{{ patient.id }}">{{ patient.full_name }} - {{patient.number}}</option>
                 {% endfor %}
             </select><br/>
             <span>Purpose/Health case</span><br/>
-            <textarea name="purpose"></textarea><br/>
+            <textarea id="purpose" name="purpose"></textarea><br/>
             <div class="drugDiv">
             </div>
             <div>
+                <br/>
                 <span>Drug</span><br/>
                 <select id="drug_id" name="drug_id">
                     <option value="">Select drug</option>
@@ -162,8 +163,9 @@
                 <input id="unit" name="no_of_unit" type="text" placeholder="Enter drug unit"/><br/><br/>
                 <button onclick="addDrug()">Add Drug</button>
             </div>
-            <br/><br/>
-            <button>Save Prescription</button>
+            <br/>
+            <p style="color: red" id="messagep"></p>
+            <button onclick="savePrescription()">Save Prescription</button>
         </div>
     </div>
     <script>
@@ -190,7 +192,7 @@
             const unit = document.getElementById("unit");
             
             drugDiv.innerHTML += `
-              <p class='drugpar drugdiv-${drugCnt}'>
+              <p id="p-${drug.value.split('-')[0]}-${unit.value}" class='drugpar drugdiv-${drugCnt}'>
                 Drug: ${drug.value.split('-')[1]} &nbsp;&nbsp;Unit: ${unit.value} &nbsp;&nbsp; <span onclick='removeDrug(${drugCnt})'>Remove</span>
               </p>
             `
@@ -200,6 +202,62 @@
         const removeDrug = (index) =>{
             const drugP = document.querySelector(`.drugdiv-${index}`);
             drugDiv.removeChild(drugP)
+        }
+
+        const savePrescription =()=>{
+            const patient_id = document.querySelector('#patient_id').value;
+            const purpose = document.querySelector('#purpose').value;
+            const data = {             
+                patient_id: Number(patient_id), purpose,          
+                drugs: []
+            }
+
+            const allDrugs = document.querySelectorAll('.drugDiv > p');
+            const allDrugsLen = allDrugs.length;
+
+            for(let i = 0; i < allDrugsLen; i++){
+                const allVals = allDrugs[i].id.split('-');
+                data.drugs.push({
+                    id: allVals[1],
+                    unit: allVals[2]
+                })
+            }
+
+            fetch('/doctor/prescribe-drug',{
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers:{
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "Accept": "application/json",
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response=>response.json())
+            .then(result=>{
+                document.querySelector('#messagep').innerHTML = `
+                    ${result.message}<br/>
+                    Prescription Id: ${result.data}
+                `;
+                changeScreen(2);
+            })
+        }
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
 </body>

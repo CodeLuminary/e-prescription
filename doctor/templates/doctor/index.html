@@ -223,7 +223,7 @@
                 })
             }
 
-            fetch('/doctor/prescribe-drug',{
+            fetch('/pharmacy/prescribe-drug',{
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
@@ -242,6 +242,7 @@
                 `;
                 changeScreen(2);
             })
+        
         }
 
         function getCookie(name) {

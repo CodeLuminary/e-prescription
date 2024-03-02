@@ -105,10 +105,10 @@
                      </tr>
                 </thead> 
                 <tbody>
-                 {% for patient in data.patients %}
+                 {% for drug in data %}
                      <tr>
-                         <td>{{ patient.name }}</td>
-                         <td>{{ patient.description }}</td>
+                         <td>{{ drug.name }}</td>
+                         <td>{{ drug.description }}</td>
                      </tr>
                  {% endfor %}
                 </tbody>
@@ -116,6 +116,11 @@
         </div>
         <div class="administer">
             <h2>Administer Prescription</h2>
+            <span>Enter Prescription Id</span><br/>
+            <input id="searchTxt" type="text" placeholder="Enter prescription Id" />&nbsp;<button onclick="SearchPrescription()">Search</button>
+            <div class="prescriptionDiv">
+
+            </div>
         </div>
     </div>
     <script>
@@ -135,23 +140,75 @@
             allContents[index].style.display = 'block';
             allBtn[index].classList.add('highlight')
         }
-        let drugCnt = 0;
-        const drugDiv = document.querySelector('.drugDiv');
-        const addDrug = ()=>{
-            const drug = document.getElementById("drug_id");
-            const unit = document.getElementById("unit");
-            
-            drugDiv.innerHTML += `
-              <p class='drugpar drugdiv-${drugCnt}'>
-                Drug: ${drug.value.split('-')[1]} &nbsp;&nbsp;Unit: ${unit.value} &nbsp;&nbsp; <span onclick='removeDrug(${drugCnt})'>Remove</span>
-              </p>
-            `
-            drugCnt++;
+        
+        const SearchPrescription = () =>{
+            const searchTxt = document.querySelector('#searchTxt').value;
+
+            fetch('/pharmacy/search-prescription',{
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers:{
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "Accept": "application/json",
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: searchTxt
+                })
+            })
+            .then(response=>response.json())
+            .then(result=>{
+                console.log(result)
+                document.querySelector('.prescriptionDiv').innerHTML = `
+                    Patient: ${result.prescription.patient.full_name}<br/>
+                    Age: ${result.prescription.patient.age}<br/>
+                    Gender: ${result.prescription.patient.gender}<br/>
+                    Phone Number: ${result.prescription.patient.number}<br/>
+                    Purpose: ${result.prescription.purpose}<br/>
+                    <br/>
+                    Drugs
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>S/N</th>
+                                <th>Drug</th>
+                                <th>Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                `;
+
+                const tbod = document.querySelector('.prescriptionDiv table tbody');
+                for(let i = 0; i < result.drugs.length; i++){
+                    tbod.innerHTML = `
+                        <tr>
+                            <td>${i+1}</td>
+                            <td>${result.drugs[i].drug_id.name}</td>
+                            <td>${result.drugs[i].no_of_unit}</td>
+                        </tr>
+                    `;
+                }
+            })
+        
         }
 
-        const removeDrug = (index) =>{
-            const drugP = document.querySelector(`.drugdiv-${index}`);
-            drugDiv.removeChild(drugP)
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
 </body>

@@ -29,18 +29,16 @@ python manage.py migrate
 
 python manage.py createsuperuser
 ```
----
 - Give username, email, password and your admin account will be created.
+- Run the application by entering the following command:
+```
+python manage.py runserver 
+```
+- Go to admin by entering http://127.0.0.1:8000/admin on your favourite browser
 - After login, add doctor and pharmacy user
 - Admin can add/delete/view/edit Pharmacist.
 - Admin can view/edit/delete doctor(s).
----
-
-```
-python manage.py runserver
-```
-
-- Now enter following URL in Your Browser Installed On Your PC
+- You can access the main application enter following URL in Your favourite browser
 ```
 http://127.0.0.1:8000/account
 ```

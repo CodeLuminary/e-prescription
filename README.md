@@ -17,7 +17,7 @@ When a doctor prescribe a medication, a unique number is generated which when in
 ```
 pip install djangorestframework
 ```
-## Setting Up
+## Setting Up & Running Application
 
 - Fork/Clone/Download the Repository 
 - Open project folder in a terminal and execute the following commands:
